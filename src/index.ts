@@ -1,11 +1,7 @@
-function helloWorld() {
-  console.log("hello world");
+import Assembler from "./assembler";
+
+globalThis.exports = {
+  Assembler,
 }
 
-const exports = {
-  helloWorld,
-}
-
-export default exports;
-
-globalThis.exports = exports;
+export default Assembler

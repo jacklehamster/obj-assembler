@@ -10,7 +10,7 @@ export default {
   entry: "/src/index.ts",
   output: { path: path.resolve(__dirname, "public/gen") },
   resolve: {
-    extensions: [".js", ".jsx", ".json", ".ts", ".tsx", ".css", ".scss", ".png"],
+    extensions: [".js", ".jsx", ".json", ".ts", ".tsx", ".css", ".scss", ".png", ".csv"],
   },
   performance: {
     hints: false,
@@ -51,4 +51,5 @@ export default {
     ],
   },
   devtool: "source-map",
+  watch: true,
 };

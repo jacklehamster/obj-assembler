@@ -3,11 +3,13 @@
     <meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="gen/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
-        div.style.position = "absolute";
-        div.style.top = "0px";
+        div.style.position = "fixed";
+        div.style.bottom = "0px";
         div.style.left = "0px";
         div.style.backgroundColor = "silver";
         div.style.width = "100vw";
@@ -21,7 +23,68 @@
       });
     </script>
     <title>Demo</title>
+    <style>
+      textarea {
+        flex: 1;
+        height: 350px;
+      }
+      .container {
+        display: flex;
+        width: 100%;
+      }
+    </style>
 	</head>
 	<body>
+    <h1>Obj Assembly</h1>
+    <hr>
+    <h3>Source files</h3>
+      <div style="display: flex; flex-direction: column;">
+        <a href="data/sample-data.json" target="_blank">data/sample-data.json</a>
+        <a href="data/secondary-data.json" target="_blank">data/secondary-data.json</a>
+        <a href="data/sample-text.txt" target="_blank">data/sample-text.txt</a>
+        <a href="data/data-with-params.json" target="_blank">data/data-with-parms.json</a>
+        <a href="data/resource/grid.csv" target="_blank">data/resource/grid.csv</a>
+        <a href="assets/beepbop.mp3" target="_blank">assets/beepbop.mp3</a>
+        <a href="assets/dobuki.png" target="_blank">assets/dobuki.png</a>
+      </div>
+    <h3>Demo</h3>
+    <div class="container">
+      <textarea id="data" placeholder="mainData"></textarea>
+      <textarea id="result-data" placeholder="mainData"></textarea>
+    </div>
+    <p>
+      <button type="button" onclick="processData()">Process >></button>
+    </p>
+    <script>
+      function refreshData(json) {
+        document.getElementById("result-data").value = JSON.stringify(json, null, "  ");
+      }
+      let mainData;
+      function fun() {
+        refreshData(mainData);
+        requestAnimationFrame(fun);
+      }
+      fun();
+
+      const assembler = new exports.Assembler();
+
+      async function processData() {
+        mainData = await assembler.assemble(
+          JSON.parse(document.getElementById("data").value),
+          "data/"
+        );
+      }
+
+      fetch("data/sample-data.json").then(async result => {
+        document.getElementById("data").value = JSON.stringify(await result.json(), null, "  ");
+      });
+    </script>
+    <p id="usage">
+    </p>
+    <script>
+      fetch("doc/usage.md").then(async result => {
+        document.getElementById("usage").innerHTML = marked.parse(await result.text());
+      });
+    </script>
 	</body>
 </html>

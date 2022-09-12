@@ -1,0 +1,32 @@
+{
+  "secondary": {
+    "type": "json", "src": "secondary-data.json"
+  },
+  "image": {
+    "type": "image", "src": "../assets/dobuki.png"
+  },
+  "sampleText": {
+    "type": "text", "src": "sample-text.txt"
+  },
+  "music": {
+    "type": "audio", "src": "../assets/beepbop.mp3"
+  },
+  "sampleWithParams": {
+    "type": "json", "src": "data-with-params.json", "params": {"$param1": 123, "$param2": "testing", "{alsoParam}": true }
+  },
+  "reference": {
+    "type": "ref",
+    "src": "#/secondary/someData"
+  },
+  "invalid-reference": {
+    "type": "ref",
+    "src": "#/path/to/nowhere"
+  },
+  "relative-path-reference": {
+    "type": "ref",
+    "src": "../secondary/someData"
+  },
+  "sampleGrid": {
+    "type": "csv", "src": "resource/grid.csv"
+  }
+}
