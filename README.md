@@ -1,6 +1,11 @@
 # obj-assembler
 --------
+[![CodeQL](https://github.com/jacklehamster/obj-assembler/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/jacklehamster/obj-assembler/actions/workflows/codeql-analysis.yml)
 
+[![pages-build-deployment](https://github.com/jacklehamster/obj-assembler/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/jacklehamster/obj-assembler/actions/workflows/pages/pages-build-deployment)
+
+
+--------
 ### Basic usage:
 
 ObjAssembler is meant mainly to build complex JSON objects out of multiple JSON files. Commonly, you have one master JSON files that will be composed of multiple objects. Rather than have one large file, you can take pieces of them and put them into separate file.
