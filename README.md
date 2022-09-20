@@ -4,6 +4,8 @@
 
 [![pages-build-deployment](https://github.com/jacklehamster/obj-assembler/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/jacklehamster/obj-assembler/actions/workflows/pages/pages-build-deployment)
 
+[![npm version](https://badge.fury.io/js/@dobuki%2Fobj-assembler.svg)](https://badge.fury.io/js/@dobuki%2Fobj-assembler)
+
 
 --------
 ### Basic usage:
