@@ -7,38 +7,59 @@ global.Image = dom.window.Image;
 global.Audio = dom.window.Audio;
 global.location = dom.window.location;
 
-const fetchResult = jest.fn().mockReturnValue({ test: 100 });
-
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve(fetchResult()),
-    text: () => Promise.resolve(fetchResult()),
-  }),
-) as jest.Mock;
+const fetch = jest.fn();
 
 describe('testing Assembler', () => {
-  const assembler = new Assembler();
+  beforeEach(() => {
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve({ test: 100 }),
+      text: () => Promise.resolve({ test: 100 }),
+    }));
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const assembler = new Assembler({ fetch });
   test('assembler loading a simple json', async () => {
     const json = { test: { abc: 123 } };
-    fetchResult.mockReturnValueOnce(json);
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve(json),
+    }));
 
     const objects: Record<string, any> = {};
     const result = await assembler.assemble({
       type: "json",
-      src: "dummy_path",
+      reference: "dummy_path",
     }, "", "#", objects);
     expect(result.test.abc).toEqual(123);
     expect(objects["#/test/abc"]).toEqual(123);
   });
 
+  test('assembler loading a simple json without type', async () => {
+    const json = { test: { abc: 123 } };
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve(json),
+    }));
+
+    const objects: Record<string, any> = {};
+    const result = await assembler.assemble({
+      reference: "dummy_path.json",
+    });
+    expect(result.test.abc).toEqual(123);
+  });
+
   test('assembler loading parameterized json', async () => {
     const json = { test: { abc: "{var1}" } };
-    fetchResult.mockReturnValueOnce(json);
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve(json),
+    }));
 
     const objects: Record<string, any> = {};
     const result = await assembler.assemble({
       type: "json",
-      src: "dummy_path2",
+      reference: "dummy_path2",
       params: { "{var1}": 555 },
     }, "", "#", objects);
     expect(result.test.abc).toEqual(555);
@@ -46,37 +67,43 @@ describe('testing Assembler', () => {
   });
 
   test('assembler loading text', async () => {
-    fetchResult.mockReturnValueOnce("Testing");
+    fetch.mockReturnValue(Promise.resolve({
+      text: () => Promise.resolve("Testing"),
+    }));
 
     const result = await assembler.assemble({
       type: "text",
-      src: "dummy_path3",
+      reference: "dummy_path3",
     }, "");
     expect(result).toEqual("Testing");
   });
 
   test('assemling reference', async () => {
-    fetchResult.mockReturnValueOnce({
-      abc: { xyz: 333 },
-      reference: {
-        type: "ref",
-        src: "#/abc",
-      },
-    });
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve({
+        abc: { xyz: 333 },
+        reference: {
+          type: "ref",
+          reference: "#/abc",
+        },
+      }),
+    }));
 
     const result = await assembler.assemble({
       type: "json",
-      src: "dummy_path4",
+      reference: "dummy_path4",
     }, "");
     expect(result.reference).toEqual({ xyz: 333 });
   });
 
   test('assembling csv', async () => {
-    fetchResult.mockReturnValueOnce("a,b,c\nd,e,f");
+    fetch.mockReturnValue(Promise.resolve({
+      text: () => Promise.resolve("a,b,c\nd,e,f"),
+    }));
 
     const result = await assembler.assemble({
       type: "csv",
-      src: "dummy_path5",
+      reference: "dummy_path5",
     }, "");
     expect(result).toEqual([
       ["a", "b", "c"],
@@ -84,4 +111,30 @@ describe('testing Assembler', () => {
     ]);
   });
 
+  test('assemling yaml', async() => {
+    fetch.mockReturnValue(Promise.resolve({
+      yaml: () => Promise.resolve({yaml: ["test"]}),
+    }));
+
+    const result = await assembler.assemble({
+      type: "yaml",
+      reference: "dummy_path5",
+    }, "");
+    expect(result).toEqual({yaml: ["test"]});
+  });
+
+    test('assemling yaml text', async() => {
+    fetch.mockReturnValue(Promise.resolve({
+      text: () => Promise.resolve(`
+        yaml:
+        - test
+      `),
+    }));
+
+    const result = await assembler.assemble({
+      type: "yaml",
+      reference: "dummy_path5",
+    }, "");
+    expect(result).toEqual({yaml: ["test"]});
+  });
 });

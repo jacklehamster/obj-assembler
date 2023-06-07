@@ -3,20 +3,29 @@ import SourceData from "./source-types/source-data";
 import AudioTransfomer from "./transformers/audio-transformer";
 import CsvTransformer from "./transformers/csv-transformer";
 import ImageTransformer from "./transformers/image-transformer";
-import JSONTransformer from "./transformers/json-transformer";
+import ObjTransformer from "./transformers/json-transformer";
 import ReferenceTransformer from "./transformers/reference-transformer";
 import TextTransfomer from "./transformers/text-transfomer";
 import Transformer from "./transformers/transformer";
+import { actualType } from "./utils/extension";
+import {yamlFetch} from "yaml-fetch";
+
+type Fetch = typeof yamlFetch | typeof global.fetch;
+
+type RegisteryType = Exclude<SourceData["type"], undefined>;
 
 export default class Assembler {
   private transformers: Map<string, Transformer<any>> = new Map<string, Transformer<any>>();
+  private fetch: Fetch;
 
-  constructor() {
+  constructor({ fetch }: { fetch: Fetch } = { fetch: yamlFetch }) {
+    this.fetch = fetch;
     this.initialize();
   }
 
-  register<T>(type: SourceData["type"], transformer: Transformer<T>) {
-    this.transformers.set(type, transformer);
+  register<T>(type: RegisteryType | RegisteryType[], transformer: Transformer<T>) {
+    const types = Array.isArray(type) ? type : [type];
+    types.forEach(type => this.transformers.set(type, transformer));
   }
 
   clear() {
@@ -40,8 +49,11 @@ export default class Assembler {
       });
     }
 
-    if (obj.type && obj.src) {
-      const transformer = this.transformers.get(obj.type);
+    if (typeof obj.reference === "string") {
+      const path = obj.reference;
+      const type: Exclude<SourceData["type"], undefined> = obj.type ?? actualType(path);
+  
+      const transformer = this.transformers.get(type);
       if (transformer) {
         return objects[property] = await transformer.process(obj, dir, property, objects);
       }
@@ -51,11 +63,11 @@ export default class Assembler {
 
   private initialize() {
     this.transformers.clear();
-    const loader: Loader = new Loader();
+    const loader: Loader = new Loader({ fetch: this.fetch });
     this.register("image", new ImageTransformer(loader));
     this.register("audio", new AudioTransfomer(loader));
     this.register("text", new TextTransfomer(loader));
-    this.register("json", new JSONTransformer(loader, this));
+    this.register(["json", "yaml"], new ObjTransformer(loader, this));
     this.register("ref", new ReferenceTransformer());
     this.register("csv", new CsvTransformer(loader));
   }

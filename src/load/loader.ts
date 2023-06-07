@@ -1,10 +1,17 @@
 import SourceData from "../source-types/source-data";
 import { resolve } from "url";
+import { actualType } from "../utils/extension";
+import {yamlFetch} from "yaml-fetch";
+const yaml = require('js-yaml');
 
 type SourceType = SourceData["type"];
 
+type FetcherResponse = Response & {
+  yaml?(): Promise<any>;
+}
+
 type Result = {
-  json?: any;
+  object?: any;
   text?: string;
   src?: string;
 }
@@ -16,6 +23,12 @@ interface CacheResult extends Result {
 
 export default class Loader {
   private cache: Record<string, CacheResult> = {};
+  private fetch?: typeof yamlFetch | typeof global.fetch;
+
+  constructor({ fetch }: { fetch: typeof yamlFetch | typeof global.fetch } = { fetch: yamlFetch }) {
+    console.warn(this.fetch);
+    this.fetch = fetch;
+  }
 
   async get(path: string, type: SourceType): Promise<Result> {
     const fixedPath = resolve(location.href, path);
@@ -28,24 +41,32 @@ export default class Loader {
     }
     this.cache[fixedPath] = { pendingLoads: new Set(), loaded: false };
 
-    switch (type) {
-      case "text":
-        this.cache[fixedPath].text = await this.load(fixedPath, response => response.text());
-        break;
+    const theType: Exclude<SourceType, undefined> = type ?? actualType(fixedPath);
+
+    switch (theType) {
       case "image":
       case "audio":
         const blob = await this.load(fixedPath, response => response.blob());
         this.cache[fixedPath].src = URL.createObjectURL(blob);
         break;
+      case "json":
+        this.cache[fixedPath].object = await this.load(fixedPath, response => response.json());
+        break;
+      case "yaml":
+        this.cache[fixedPath].object = await this.load(fixedPath, response => (response.yaml?.() ?? response.text().then(text => yaml.load(text))));
+        break;
+      case "text":
       default:
-        this.cache[fixedPath].json = await this.load(fixedPath, response => response.json());
+        this.cache[fixedPath].text = await this.load(fixedPath, response => response.text());
+        break;
     }
     this.cache[fixedPath].loaded = true;
     return this.cache[fixedPath];
   }
 
-  private async load<T>(path: string, transform: (response: Response) => Promise<T>): Promise<T> {
-    const response = await fetch(path);
+  private async load<T>(path: string, transform: (response: FetcherResponse) => Promise<T>): Promise<T> {
+    console.warn(this.fetch);
+    const response = await this.fetch!(path);
     return await transform(response);
   }
 }

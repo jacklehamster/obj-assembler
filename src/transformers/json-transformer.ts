@@ -2,12 +2,12 @@ import Assembler from "../assembler";
 import Loader from "../load/loader";
 import AssetTransformer from "./asset-transformer";
 
-export default class JSONTransformer extends AssetTransformer<any> {
+export default class ObjTransformer extends AssetTransformer<any> {
   constructor(loader: Loader, assembler: Assembler) {
     super(loader, async (data, loader, dir, property, objects) => {
-      const { json } = await loader.get(`${dir}/${data.src}`, data.type);
-      const replacedJson = this.paramsReplacement(json, data?.params);
-      return await assembler.assemble(replacedJson, dir, property, objects);
+      const { object } = await loader.get(`${dir}/${data.reference}`, data.type);
+      const replacedObject = this.paramsReplacement(object, data?.params);
+      return await assembler.assemble(replacedObject, dir, property, objects);
     });
   }
 

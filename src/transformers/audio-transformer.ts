@@ -5,7 +5,7 @@ export default class AudioTransfomer extends AssetTransformer<HTMLAudioElement> 
   constructor(loader: Loader) {
     super(loader, async (data, loader, dir) => {
       const audio = new Audio();
-      const { src } = await loader.get(`${dir}${data.src}`, data.type);
+      const { src } = await loader.get(`${dir}${data.reference}`, data.type);
       if (src) {
         audio.src = src;
       }
