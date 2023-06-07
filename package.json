@@ -49,6 +49,6 @@
   "dependencies": {
     "js-yaml": "^4.1.0",
     "url": "^0.11.0",
-    "yaml-fetch": "^1.0.14"
+    "yaml-fetch": "^1.0.15"
   }
 }

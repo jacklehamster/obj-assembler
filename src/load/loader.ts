@@ -26,7 +26,6 @@ export default class Loader {
   private fetch?: typeof yamlFetch | typeof global.fetch;
 
   constructor({ fetch }: { fetch: typeof yamlFetch | typeof global.fetch } = { fetch: yamlFetch }) {
-    console.warn(this.fetch);
     this.fetch = fetch;
   }
 
@@ -65,7 +64,6 @@ export default class Loader {
   }
 
   private async load<T>(path: string, transform: (response: FetcherResponse) => Promise<T>): Promise<T> {
-    console.warn(this.fetch);
     const response = await this.fetch!(path);
     return await transform(response);
   }
