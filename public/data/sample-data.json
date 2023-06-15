@@ -25,6 +25,9 @@
     "type": "ref",
     "reference": "#/path/to/nowhere"
   },
+  "invalid-link": {
+    "reference": "invalid.txt"
+  },
   "relative-path-reference": {
     "type": "ref",
     "reference": "../secondary/someData"

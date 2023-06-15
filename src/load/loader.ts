@@ -65,6 +65,9 @@ export default class Loader {
 
   private async load<T>(path: string, transform: (response: FetcherResponse) => Promise<T>): Promise<T> {
     const response = await this.fetch!(path);
+    if (!response.ok) {
+      throw new Error(`Invalid response: ${response.status}`);
+    }
     return await transform(response);
   }
 
