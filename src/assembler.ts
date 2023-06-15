@@ -14,12 +14,20 @@ type Fetch = typeof yamlFetch | typeof global.fetch;
 
 type RegisteryType = Exclude<SourceData["type"], undefined>;
 
+const MAX_DEPTH = 1000;
+
+export interface AssemlyParams {
+  objects: Record<string, any>;
+  pendingPromises: Promise<any>[];
+  referenceDepth: number;
+}
+
 export default class Assembler {
   private transformers: Map<string, Transformer<any>> = new Map<string, Transformer<any>>();
-  private fetch: Fetch;
+  private loader: Loader;
 
   constructor({ fetch }: { fetch: Fetch } = { fetch: yamlFetch }) {
-    this.fetch = fetch;
+    this.loader = new Loader({ fetch });
     this.initialize();
   }
 
@@ -32,43 +40,65 @@ export default class Assembler {
     this.initialize();
   }
 
-  async assemble(obj: any | SourceData, dir: string | null = null, property: string = "#", objects: Record<string, any> = {}) {
+  async assemble(obj: any | SourceData, dir: string | null = null, property: string = "#", params?: AssemlyParams) {
+    const init = !params;
+    if (!params) {
+      params = { objects: {}, pendingPromises: [], referenceDepth: 0 };
+    }
+
     if (dir === null) {
       dir = location.href;
     }
-    if (typeof (obj) !== 'object' || !obj) {
-      return objects[property] = obj;
+    
+    if (params.referenceDepth > MAX_DEPTH) {
+      const error = `Reference depth exceeded on ${property}`;
+      console.warn(error);
+      return {...obj, error};
     }
+    if (typeof (obj) !== 'object' || !obj) {
+      return params.objects[property] = obj;
+    }
+
     if (Array.isArray(obj)) {
       obj.forEach((value, index, array) => {
-        this.assemble(value, dir, `${property}/${index}`, objects).then(result => array[index] = result);
+        params?.pendingPromises?.push(
+          this.assemble(value, dir, `${property}/${index}`, params).then(result => array[index] = result)
+        )
       });
     } else {
       Object.entries(obj).forEach(([key, value]) => {
-        this.assemble(value, dir, `${property}/${key}`, objects).then(result => obj[key] = result);
+        params?.pendingPromises?.push(        
+          this.assemble(value, dir, `${property}/${key}`, params).then(result => obj[key] = result)
+        )
       });
     }
 
+    params.objects[property] = obj;
     if (typeof obj.reference === "string") {
       const path = obj.reference;
       const type: Exclude<SourceData["type"], undefined> = obj.type ?? actualType(path);
   
       const transformer = this.transformers.get(type);
       if (transformer) {
-        return objects[property] = await transformer.process(obj, dir, property, objects);
+        params.objects[property] = await transformer.process(obj, dir, property, params);
       }
     }
-    return objects[property] = obj;
+
+    if (init) {
+      await Promise.all(params.pendingPromises);
+      this.loader.clear();
+    }
+    return params.objects[property];
   }
 
   private initialize() {
+    this.loader.clear();
     this.transformers.clear();
-    const loader: Loader = new Loader({ fetch: this.fetch });
-    this.register("image", new ImageTransformer(loader));
-    this.register("audio", new AudioTransfomer(loader));
-    this.register("text", new TextTransfomer(loader));
-    this.register(["json", "yaml"], new ObjTransformer(loader, this));
+    this.register("image", new ImageTransformer(this.loader));
+    this.register("audio", new AudioTransfomer(this.loader));
+    this.register("text", new TextTransfomer(this.loader));
+    this.register(["json", "yaml", "yml"], new ObjTransformer(this.loader, this));
     this.register("ref", new ReferenceTransformer());
-    this.register("csv", new CsvTransformer(loader));
+    this.register("csv", new CsvTransformer(this.loader));
   }
 }

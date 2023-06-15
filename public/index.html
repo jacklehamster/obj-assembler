@@ -41,12 +41,14 @@
       <div style="display: flex; flex-direction: column;">
         <a href="data/sample-data.json" target="_blank">data/sample-data.json</a>
         <a href="data/secondary-data.json" target="_blank">data/secondary-data.json</a>
+        <a href="data/sub-data.json" target="_blank">data/sub-data.json</a>
         <a href="data/sample-text.txt" target="_blank">data/sample-text.txt</a>
         <a href="data/data-with-params.json" target="_blank">data/data-with-parms.json</a>
         <a href="data/resource/grid.csv" target="_blank">data/resource/grid.csv</a>
         <a href="data/resource/yaml.yml" target="_blank">data/resource/yaml.yml</a>
         <a href="assets/beepbop.mp3" target="_blank">assets/beepbop.mp3</a>
         <a href="assets/dobuki.png" target="_blank">assets/dobuki.png</a>
+        <a href="data/circular.json" target="_blank">data/circular.json</a>
       </div>
     <h3>Demo</h3>
     <div class="container">
@@ -70,6 +72,7 @@
       const assembler = new exports.Assembler();
 
       async function processData() {
+        mainData = null;
         mainData = await assembler.assemble(
           JSON.parse(document.getElementById("data").value),
           "data/"

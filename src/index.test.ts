@@ -32,7 +32,7 @@ describe('testing Assembler', () => {
     const result = await assembler.assemble({
       type: "json",
       reference: "dummy_path",
-    }, "", "#", objects);
+    }, "", "#", {objects, referenceDepth: 0, pendingPromises: []});
     expect(result.test.abc).toEqual(123);
     expect(objects["#/test/abc"]).toEqual(123);
   });
@@ -61,7 +61,7 @@ describe('testing Assembler', () => {
       type: "json",
       reference: "dummy_path2",
       params: { "{var1}": 555 },
-    }, "", "#", objects);
+    }, "", "#", {objects, referenceDepth: 0, pendingPromises: []});
     expect(result.test.abc).toEqual(555);
     expect(objects["#/test/abc"]).toEqual(555);
   });
@@ -94,6 +94,41 @@ describe('testing Assembler', () => {
       reference: "dummy_path4",
     }, "");
     expect(result.reference).toEqual({ xyz: 333 });
+  });
+
+
+  test('assemling forward reference', async () => {
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve({
+        reference: {
+          type: "ref",
+          reference: "#/abc",
+        },
+        abc: { xyz: 333 },
+      }),
+    }));
+
+    const result = await assembler.assemble({
+      type: "json",
+      reference: "dummy_path4",
+    }, "");
+    expect(result.reference).toEqual({ xyz: 333 });
+  });
+
+  test('assemling invalid reference', async () => {
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve({
+        reference: {
+          type: "ref",
+          reference: "#/abc",
+        },
+      }),
+    }));
+
+    const result = await assembler.assemble({
+      reference: "dummy_path4.json",
+    }, "");
+    expect(result.reference.error).toEqual("Unable to find reference for: #/abc");
   });
 
   test('assembling csv', async () => {
@@ -136,5 +171,18 @@ describe('testing Assembler', () => {
       reference: "dummy_path5",
     }, "");
     expect(result).toEqual({yaml: ["test"]});
+  });
+
+  test('assembler loading circular reference', async () => {
+    const json = { reference: "dummy_path.json" };
+    fetch.mockReturnValue(Promise.resolve({
+      json: () => Promise.resolve(json),
+    }));
+
+    const objects: Record<string, any> = {};
+    const result = await assembler.assemble({
+      reference: "dummy_path.json",
+    }, "", "#", {objects, referenceDepth: 0, pendingPromises: []});
+    expect(result.error).toEqual("Reference depth exceeded on #");
   });
 });

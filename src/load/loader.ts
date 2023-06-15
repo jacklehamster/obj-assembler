@@ -38,33 +38,42 @@ export default class Loader {
         return new Promise(resolve => this.cache[fixedPath].pendingLoads.add(resolve));
       }
     }
-    this.cache[fixedPath] = { pendingLoads: new Set(), loaded: false };
-
     const theType: Exclude<SourceType, undefined> = type ?? actualType(fixedPath);
+    const cacheResult: CacheResult = this.cache[fixedPath] = { pendingLoads: new Set(), loaded: false };
 
     switch (theType) {
       case "image":
       case "audio":
         const blob = await this.load(fixedPath, response => response.blob());
-        this.cache[fixedPath].src = URL.createObjectURL(blob);
+        cacheResult.src = URL.createObjectURL(blob);
         break;
       case "json":
-        this.cache[fixedPath].object = await this.load(fixedPath, response => response.json());
+        cacheResult.object = await this.load(fixedPath, response => response.json());
         break;
       case "yaml":
-        this.cache[fixedPath].object = await this.load(fixedPath, response => (response.yaml?.() ?? response.text().then(text => yaml.load(text))));
+        cacheResult.object = await this.load(fixedPath, response => (response.yaml?.() ?? response.text().then(text => yaml.load(text))));
         break;
       case "text":
       default:
-        this.cache[fixedPath].text = await this.load(fixedPath, response => response.text());
+        cacheResult.text = await this.load(fixedPath, response => response.text());
         break;
     }
-    this.cache[fixedPath].loaded = true;
-    return this.cache[fixedPath];
+    cacheResult.loaded = true;
+    cacheResult.pendingLoads.forEach(pendingLoad => pendingLoad(cacheResult));
+    return cacheResult;
   }
 
   private async load<T>(path: string, transform: (response: FetcherResponse) => Promise<T>): Promise<T> {
     const response = await this.fetch!(path);
     return await transform(response);
+  }
+
+  clear() {
+    Object.values(this.cache).forEach(cacheResult => {
+      if (cacheResult.src) {
+        URL.revokeObjectURL(cacheResult.src);
+      }
+    });
+    Object.keys(this.cache).forEach(key => delete this.cache[key]);
   }
 }

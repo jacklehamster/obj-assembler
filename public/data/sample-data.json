@@ -1,6 +1,9 @@
 {
   "secondary": {
-    "type": "json", "reference": "secondary-data.json"
+    "reference": "secondary-data.json"
+  },
+  "sub": {
+    "type": "json", "reference": "sub-data.json"
   },
   "image": {
     "type": "image", "reference": "../assets/dobuki.png"
@@ -31,5 +34,8 @@
   },
   "sampleYaml": {
     "reference": "resource/yaml.yml"
+  },
+  "circular-reference": {
+    "type": "json", "reference": "circular.json"
   }
 }

@@ -14,5 +14,6 @@ export default class Loader {
     });
     get(path: string, type: SourceType): Promise<Result>;
     private load;
+    clear(): void;
 }
 export {};

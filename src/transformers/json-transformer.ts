@@ -4,10 +4,10 @@ import AssetTransformer from "./asset-transformer";
 
 export default class ObjTransformer extends AssetTransformer<any> {
   constructor(loader: Loader, assembler: Assembler) {
-    super(loader, async (data, loader, dir, property, objects) => {
+    super(loader, async (data, loader, dir, property, params) => {
       const { object } = await loader.get(`${dir}/${data.reference}`, data.type);
       const replacedObject = this.paramsReplacement(object, data?.params);
-      return await assembler.assemble(replacedObject, dir, property, objects);
+      return await assembler.assemble(replacedObject, dir, property, {...params, referenceDepth: params.referenceDepth + 1});
     });
   }
 
