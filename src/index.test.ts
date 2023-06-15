@@ -12,6 +12,7 @@ const fetch = jest.fn();
 describe('testing Assembler', () => {
   beforeEach(() => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve({ test: 100 }),
       text: () => Promise.resolve({ test: 100 }),
     }));
@@ -25,6 +26,7 @@ describe('testing Assembler', () => {
   test('assembler loading a simple json', async () => {
     const json = { test: { abc: 123 } };
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve(json),
     }));
 
@@ -40,11 +42,13 @@ describe('testing Assembler', () => {
   test('assembler loading a simple json without type', async () => {
     const json = { test: { abc: 123 } };
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve(json),
     }));
 
     const objects: Record<string, any> = {};
     const result = await assembler.assemble({
+      ok: true,
       reference: "dummy_path.json",
     });
     expect(result.test.abc).toEqual(123);
@@ -53,6 +57,7 @@ describe('testing Assembler', () => {
   test('assembler loading parameterized json', async () => {
     const json = { test: { abc: "{var1}" } };
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve(json),
     }));
 
@@ -68,6 +73,7 @@ describe('testing Assembler', () => {
 
   test('assembler loading text', async () => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       text: () => Promise.resolve("Testing"),
     }));
 
@@ -80,6 +86,7 @@ describe('testing Assembler', () => {
 
   test('assemling reference', async () => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve({
         abc: { xyz: 333 },
         reference: {
@@ -99,6 +106,7 @@ describe('testing Assembler', () => {
 
   test('assemling forward reference', async () => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve({
         reference: {
           type: "ref",
@@ -117,6 +125,7 @@ describe('testing Assembler', () => {
 
   test('assemling invalid reference', async () => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve({
         reference: {
           type: "ref",
@@ -133,6 +142,7 @@ describe('testing Assembler', () => {
 
   test('assembling csv', async () => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       text: () => Promise.resolve("a,b,c\nd,e,f"),
     }));
 
@@ -148,6 +158,7 @@ describe('testing Assembler', () => {
 
   test('assemling yaml', async() => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       yaml: () => Promise.resolve({yaml: ["test"]}),
     }));
 
@@ -160,6 +171,7 @@ describe('testing Assembler', () => {
 
     test('assemling yaml text', async() => {
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       text: () => Promise.resolve(`
         yaml:
         - test
@@ -176,6 +188,7 @@ describe('testing Assembler', () => {
   test('assembler loading circular reference', async () => {
     const json = { reference: "dummy_path.json" };
     fetch.mockReturnValue(Promise.resolve({
+      ok: true,
       json: () => Promise.resolve(json),
     }));
 

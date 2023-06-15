@@ -2,7 +2,7 @@ import SourceData from "../source-types/source-data";
 import { resolve } from "url";
 import { actualType } from "../utils/extension";
 import {yamlFetch} from "yaml-fetch";
-const yaml = require('js-yaml');
+import yaml from "js-yaml"
 
 type SourceType = SourceData["type"];
 
