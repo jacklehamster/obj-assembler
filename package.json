@@ -1,6 +1,6 @@
 {
   "name": "@dobuki/obj-assembler",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "exports": "./src/index.ts",
   "type": "module",
