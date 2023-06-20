@@ -47,7 +47,7 @@ export class Assembler {
     }
 
     if (dir === null) {
-      dir = location.href;
+      dir = global.location.href;
     }
     
     if (params.referenceDepth > MAX_DEPTH) {

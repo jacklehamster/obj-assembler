@@ -8022,7 +8022,6 @@ var Loader = /*#__PURE__*/function () {
     try {
       var _this2 = this;
       return Promise.resolve(_this2.fetch(path)).then(function (response) {
-        console.log(response);
         if (!response.ok) {
           throw new Error("Invalid response: " + response.status);
         }
@@ -8326,7 +8325,7 @@ var Assembler = /*#__PURE__*/function () {
         };
       }
       if (dir === null) {
-        dir = location.href;
+        dir = global.location.href;
       }
       if (params.referenceDepth > MAX_DEPTH) {
         var error = "Reference depth exceeded on " + property;

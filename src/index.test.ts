@@ -9,6 +9,7 @@ describe('testing Assembler', () => {
       json: () => Promise.resolve({ test: 100 }),
       text: () => Promise.resolve({ test: 100 }),
     }));
+    globalThis.location = { href: "" } as Location & { href: "" };
   })
 
   afterEach(() => {
