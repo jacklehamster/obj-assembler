@@ -1,10 +1,4 @@
-import { JSDOM } from 'jsdom';
 import { Assembler } from './assembler';
-
-const dom = new JSDOM();
-global.Image = dom.window.Image;
-global.Audio = dom.window.Audio;
-global.location = dom.window.location;
 
 const fetch = jest.fn();
 
