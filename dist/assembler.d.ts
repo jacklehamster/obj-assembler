@@ -1,14 +1,14 @@
 import SourceData from "./source-types/source-data";
 import Transformer from "./transformers/transformer";
 import { yamlFetch } from "yaml-fetch";
-type Fetch = typeof yamlFetch | typeof global.fetch;
-type RegisteryType = Exclude<SourceData["type"], undefined>;
+declare type Fetch = typeof yamlFetch | typeof global.fetch;
+declare type RegisteryType = Exclude<SourceData["type"], undefined>;
 export interface AssemlyParams {
     objects: Record<string, any>;
     pendingPromises: Promise<any>[];
     referenceDepth: number;
 }
-export default class Assembler {
+export declare class Assembler {
     private transformers;
     private loader;
     constructor({ fetch }?: {

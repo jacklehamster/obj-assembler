@@ -1,6 +1,5 @@
-import Assembler from "./index"
-
 import { JSDOM } from 'jsdom';
+import { Assembler } from './assembler';
 
 const dom = new JSDOM();
 global.Image = dom.window.Image;
@@ -46,7 +45,6 @@ describe('testing Assembler', () => {
       json: () => Promise.resolve(json),
     }));
 
-    const objects: Record<string, any> = {};
     const result = await assembler.assemble({
       ok: true,
       reference: "dummy_path.json",

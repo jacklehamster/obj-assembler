@@ -6,9 +6,9 @@ import { resolve } from "url";
 const REFERENCE_SEARCH_LIMIT = 3000;
 
 export default class ReferenceTransformer extends Transformer<any> {
-  async process(data: SourceData, dir: string, property: string, params: AssemlyParams): Promise<any> {
+  async process(data: SourceData, _: string, property: string, params: AssemlyParams): Promise<any> {
     const path = data.reference.startsWith("#") ? data.reference : "#" + resolve(property.substring(1), data.reference);
-    const ref: any = await new Promise((resolve, reject) => {
+    const ref: any = await new Promise((resolve) => {
       const start = Date.now();
       function findReference() {
         if (params.objects[path] !== undefined) {

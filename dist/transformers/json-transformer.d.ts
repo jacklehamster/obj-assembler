@@ -1,4 +1,4 @@
-import Assembler from "../assembler";
+import { Assembler } from "../assembler";
 import Loader from "../load/loader";
 import AssetTransformer from "./asset-transformer";
 export default class ObjTransformer extends AssetTransformer<any> {

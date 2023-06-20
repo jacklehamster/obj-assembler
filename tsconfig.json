@@ -1,29 +1,38 @@
 {
-  "ts-node": {
-    "transpileOnly": true,
-    "files": true,
-    "esm": true
-  },
   "compilerOptions": {
-    "jsx": "react",
-    "outDir": "./dist",
-    "module": "es2022",
-    "moduleResolution": "Node",
-    "allowJs": true,
-    "noImplicitAny": true,
-    "declaration": true,
     "strict": true,
-    "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "skipLibCheck": true,
+    "outDir": "dist",
+    "module": "esnext",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "moduleResolution": "node",
+    "jsx": "react",
+    "sourceMap": true,
+    "declaration": true,
     "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
+    "target": "es5",
+    "allowJs": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false
+    "noEmit": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "example"
+  ]
 }

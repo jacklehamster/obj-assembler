@@ -1,7 +1,7 @@
 import SourceData from "../source-types/source-data";
 import { yamlFetch } from "yaml-fetch";
-type SourceType = SourceData["type"];
-type Result = {
+declare type SourceType = SourceData["type"];
+declare type Result = {
     object?: any;
     text?: string;
     src?: string;

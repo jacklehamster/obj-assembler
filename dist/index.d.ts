@@ -1,2 +1,1 @@
-import Assembler from "./assembler";
-export default Assembler;
+export * from "./assembler";

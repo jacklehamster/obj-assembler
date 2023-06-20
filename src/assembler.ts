@@ -22,7 +22,7 @@ export interface AssemlyParams {
   referenceDepth: number;
 }
 
-export default class Assembler {
+export class Assembler {
   private transformers: Map<string, Transformer<any>> = new Map<string, Transformer<any>>();
   private loader: Loader;
 
