@@ -5,7 +5,7 @@
    "description": "",
    "author": "jacklehamster",
    "license": "MIT",
-   "repository": "jacklehamster/dok-lib",
+   "repository": "jacklehamster/obj-assembler",
    "main": "dist/index.js",
    "module": "dist/index.modern.js",
    "source": "src/index.ts",
