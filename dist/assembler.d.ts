@@ -16,6 +16,7 @@ export declare class Assembler {
     });
     register<T>(type: RegisteryType | RegisteryType[], transformer: Transformer<T>): void;
     clear(): void;
+    load(path: string): Promise<any>;
     assemble(obj: any | SourceData, dir?: string | null, property?: string, params?: AssemlyParams): Promise<any>;
     private initialize;
 }

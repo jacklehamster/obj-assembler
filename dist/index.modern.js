@@ -8294,6 +8294,30 @@ var Assembler = /*#__PURE__*/function () {
   _proto.clear = function clear() {
     this.initialize();
   };
+  _proto.load = function load(path) {
+    try {
+      var _this2 = this;
+      return Promise.resolve(_this2.loader.get(path, undefined)).then(function (result) {
+        var _exit = false;
+        var _temp2 = function () {
+          if (typeof result === "object") {
+            var split = path.split("/");
+            split.pop();
+            var dir = split.join("/");
+            return Promise.resolve(_this2.assemble(result, dir)).then(function (_await$_this2$assembl) {
+              _exit = true;
+              return _await$_this2$assembl;
+            });
+          }
+        }();
+        return _temp2 && _temp2.then ? _temp2.then(function (_result) {
+          return _exit ? _result : result;
+        }) : _exit ? _temp2 : result;
+      });
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
   _proto.assemble = function assemble(obj, dir, property, params) {
     if (dir === void 0) {
       dir = null;
@@ -8302,20 +8326,20 @@ var Assembler = /*#__PURE__*/function () {
       property = "#";
     }
     try {
-      var _temp6 = function _temp6() {
-        function _temp4() {
+      var _temp7 = function _temp7() {
+        function _temp5() {
           return params.objects[property];
         }
-        var _temp3 = function () {
+        var _temp4 = function () {
           if (init) {
             return Promise.resolve(Promise.all(params.pendingPromises)).then(function () {
-              _this2.loader.clear();
+              _this3.loader.clear();
             });
           }
         }();
-        return _temp3 && _temp3.then ? _temp3.then(_temp4) : _temp4(_temp3);
+        return _temp4 && _temp4.then ? _temp4.then(_temp5) : _temp5(_temp4);
       };
-      var _this2 = this;
+      var _this3 = this;
       var init = !params;
       if (!params) {
         params = {
@@ -8340,7 +8364,7 @@ var Assembler = /*#__PURE__*/function () {
       if (Array.isArray(obj)) {
         obj.forEach(function (value, index, array) {
           var _params, _params$pendingPromis;
-          (_params = params) === null || _params === void 0 ? void 0 : (_params$pendingPromis = _params.pendingPromises) === null || _params$pendingPromis === void 0 ? void 0 : _params$pendingPromis.push(_this2.assemble(value, dir, property + "/" + index, params).then(function (result) {
+          (_params = params) === null || _params === void 0 ? void 0 : (_params$pendingPromis = _params.pendingPromises) === null || _params$pendingPromis === void 0 ? void 0 : _params$pendingPromis.push(_this3.assemble(value, dir, property + "/" + index, params).then(function (result) {
             return array[index] = result;
           }));
         });
@@ -8349,29 +8373,29 @@ var Assembler = /*#__PURE__*/function () {
           var _params2, _params2$pendingPromi;
           var key = _ref2[0],
             value = _ref2[1];
-          (_params2 = params) === null || _params2 === void 0 ? void 0 : (_params2$pendingPromi = _params2.pendingPromises) === null || _params2$pendingPromi === void 0 ? void 0 : _params2$pendingPromi.push(_this2.assemble(value, dir, property + "/" + key, params).then(function (result) {
+          (_params2 = params) === null || _params2 === void 0 ? void 0 : (_params2$pendingPromi = _params2.pendingPromises) === null || _params2$pendingPromi === void 0 ? void 0 : _params2$pendingPromi.push(_this3.assemble(value, dir, property + "/" + key, params).then(function (result) {
             return obj[key] = result;
           }));
         });
       }
       params.objects[property] = obj;
-      var _temp5 = function () {
+      var _temp6 = function () {
         if (typeof obj.reference === "string") {
           var _obj$type;
           var path = obj.reference;
           var type = (_obj$type = obj.type) != null ? _obj$type : actualType(path);
-          var transformer = _this2.transformers.get(type);
-          var _temp2 = function () {
+          var transformer = _this3.transformers.get(type);
+          var _temp3 = function () {
             if (transformer) {
               return Promise.resolve(transformer.process(obj, dir, property, params)).then(function (_transformer$process) {
                 params.objects[property] = _transformer$process;
               });
             }
           }();
-          if (_temp2 && _temp2.then) return _temp2.then(function () {});
+          if (_temp3 && _temp3.then) return _temp3.then(function () {});
         }
       }();
-      return Promise.resolve(_temp5 && _temp5.then ? _temp5.then(_temp6) : _temp6(_temp5));
+      return Promise.resolve(_temp6 && _temp6.then ? _temp6.then(_temp7) : _temp7(_temp6));
     } catch (e) {
       return Promise.reject(e);
     }

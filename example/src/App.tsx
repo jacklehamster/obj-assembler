@@ -12,14 +12,8 @@ const App = () => {
   useEffect(() => {
     fetch("data/sample-data.json").then(async result => {
       setSource(JSON.stringify(await result.json(), null, "  "));
-//      document.getElementById("data").value = JSON.stringify(await result.json(), null, "  ");
     });
   }, []);
-
-  // mainData = await assembler.assemble(
-  //   JSON.parse(document.getElementById("data").value),
-  //   "data/"
-  // );
 
   const processData = useCallback(async () => {
     setProcessing(true);

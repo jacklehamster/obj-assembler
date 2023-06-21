@@ -40,6 +40,17 @@ export class Assembler {
     this.initialize();
   }
 
+  async load(path: string): Promise<any> {
+    const result = await this.loader.get(path, undefined);
+    if (typeof(result) === "object") {
+      const split = path.split("/");
+      split.pop();
+      const dir = split.join("/");
+      return await this.assemble(result, dir);
+    }
+    return result;
+  }
+
   async assemble(obj: any | SourceData, dir: string | null = null, property: string = "#", params?: AssemlyParams) {
     const init = !params;
     if (!params) {
