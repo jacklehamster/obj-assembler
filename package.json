@@ -1,7 +1,7 @@
 {
    "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/package.json",
    "name": "obj-assembler",
-   "version": "1.0.3",
+   "version": "1.1.0",
    "description": "",
    "author": "jacklehamster",
    "license": "MIT",
