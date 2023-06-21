@@ -8299,20 +8299,24 @@ var Assembler = /*#__PURE__*/function () {
       var _this2 = this;
       return Promise.resolve(_this2.loader.get(path, undefined)).then(function (result) {
         var _exit = false;
+        function _temp3(_result) {
+          return _exit ? _result : result.object;
+        }
+        if (result.text) {
+          return result.text;
+        }
         var _temp2 = function () {
-          if (typeof result === "object") {
+          if (typeof result.object === "object") {
             var split = path.split("/");
             split.pop();
             var dir = split.join("/");
-            return Promise.resolve(_this2.assemble(result, dir)).then(function (_await$_this2$assembl) {
+            return Promise.resolve(_this2.assemble(result.object, dir)).then(function (_await$_this2$assembl) {
               _exit = true;
               return _await$_this2$assembl;
             });
           }
         }();
-        return _temp2 && _temp2.then ? _temp2.then(function (_result) {
-          return _exit ? _result : result;
-        }) : _exit ? _temp2 : result;
+        return _temp2 && _temp2.then ? _temp2.then(_temp3) : _temp3(_temp2);
       });
     } catch (e) {
       return Promise.reject(e);
@@ -8326,18 +8330,18 @@ var Assembler = /*#__PURE__*/function () {
       property = "#";
     }
     try {
-      var _temp7 = function _temp7() {
-        function _temp5() {
+      var _temp8 = function _temp8() {
+        function _temp6() {
           return params.objects[property];
         }
-        var _temp4 = function () {
+        var _temp5 = function () {
           if (init) {
             return Promise.resolve(Promise.all(params.pendingPromises)).then(function () {
               _this3.loader.clear();
             });
           }
         }();
-        return _temp4 && _temp4.then ? _temp4.then(_temp5) : _temp5(_temp4);
+        return _temp5 && _temp5.then ? _temp5.then(_temp6) : _temp6(_temp5);
       };
       var _this3 = this;
       var init = !params;
@@ -8379,23 +8383,23 @@ var Assembler = /*#__PURE__*/function () {
         });
       }
       params.objects[property] = obj;
-      var _temp6 = function () {
+      var _temp7 = function () {
         if (typeof obj.reference === "string") {
           var _obj$type;
           var path = obj.reference;
           var type = (_obj$type = obj.type) != null ? _obj$type : actualType(path);
           var transformer = _this3.transformers.get(type);
-          var _temp3 = function () {
+          var _temp4 = function () {
             if (transformer) {
               return Promise.resolve(transformer.process(obj, dir, property, params)).then(function (_transformer$process) {
                 params.objects[property] = _transformer$process;
               });
             }
           }();
-          if (_temp3 && _temp3.then) return _temp3.then(function () {});
+          if (_temp4 && _temp4.then) return _temp4.then(function () {});
         }
       }();
-      return Promise.resolve(_temp6 && _temp6.then ? _temp6.then(_temp7) : _temp7(_temp6));
+      return Promise.resolve(_temp7 && _temp7.then ? _temp7.then(_temp8) : _temp8(_temp7));
     } catch (e) {
       return Promise.reject(e);
     }
