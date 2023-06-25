@@ -8270,6 +8270,7 @@ var TextTransfomer = /*#__PURE__*/function (_AssetTransformer) {
 }(AssetTransformer);
 
 var MAX_DEPTH = 1000;
+var REF_REGEX = /^~reference=/;
 var Assembler = /*#__PURE__*/function () {
   function Assembler(_temp) {
     var _ref = _temp === void 0 ? {
@@ -8360,6 +8361,11 @@ var Assembler = /*#__PURE__*/function () {
         return Promise.resolve(_extends({}, obj, {
           error: error
         }));
+      }
+      if (typeof obj === 'string' && REF_REGEX.test(obj)) {
+        obj = {
+          reference: obj.split("~reference=")[1]
+        };
       }
       if (typeof obj !== 'object' || !obj) {
         return Promise.resolve(params.objects[property] = obj);

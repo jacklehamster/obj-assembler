@@ -33,6 +33,19 @@ describe('testing Assembler', () => {
     expect(objects["#/test/abc"]).toEqual(123);
   });
 
+  test('assembler loading reference as string', async () => {
+    const json = { test: { abc: 123 } };
+    fetch.mockReturnValue(Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(json),
+    }));
+
+    const objects: Record<string, any> = {};
+    const result = await assembler.assemble("~reference=dummy_path.json", "", "#", {objects, referenceDepth: 0, pendingPromises: []});
+    expect(result.test.abc).toEqual(123);
+    expect(objects["#/test/abc"]).toEqual(123);
+  });
+
   test('assembler loading a simple json without type', async () => {
     const json = { test: { abc: 123 } };
     fetch.mockReturnValue(Promise.resolve({

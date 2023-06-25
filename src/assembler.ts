@@ -16,6 +16,8 @@ type RegisteryType = Exclude<SourceData["type"], undefined>;
 
 const MAX_DEPTH = 1000;
 
+const REF_REGEX = /^~reference=/;
+
 export interface AssemlyParams {
   objects: Record<string, any>;
   pendingPromises: Promise<any>[];
@@ -69,6 +71,10 @@ export class Assembler {
       console.warn(error);
       return {...obj, error};
     }
+    if (typeof(obj) === 'string' && REF_REGEX.test(obj)) {
+      obj = { reference: obj.split("~reference=")[1] };
+    }
+
     if (typeof (obj) !== 'object' || !obj) {
       return params.objects[property] = obj;
     }
