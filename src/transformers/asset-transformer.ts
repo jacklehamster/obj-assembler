@@ -12,6 +12,10 @@ export default class AssetTransformer<T> extends Transformer<T> {
     this.assetFactory = factory;
   }
 
+  loadAsset(data: SourceData, loader: Loader, dir: string, type?: string) {
+    return loader.get(`${dir}/${data.reference}`, type ?? data.type);    
+  }
+
   async process(data: SourceData, dir: string, property: string, params: AssemlyParams): Promise<T> {
     return await this.assetFactory(data, this.loader, dir, property, params);
   }

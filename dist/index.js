@@ -8056,6 +8056,9 @@ var AssetTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
   var _proto = AssetTransformer.prototype;
+  _proto.loadAsset = function loadAsset(data, loader, dir, type) {
+    return loader.get(dir + "/" + data.reference, type != null ? type : data.type);
+  };
   _proto.process = function process(data, dir, property, params) {
     try {
       var _this2 = this;
@@ -8070,11 +8073,12 @@ var AssetTransformer = /*#__PURE__*/function (_Transformer) {
 var AudioTransfomer = /*#__PURE__*/function (_AssetTransformer) {
   _inheritsLoose(AudioTransfomer, _AssetTransformer);
   function AudioTransfomer(loader) {
-    return _AssetTransformer.call(this, loader, function (data, loader, dir) {
+    var _this;
+    return _this = _AssetTransformer.call(this, loader, function (data, loader, dir) {
       try {
         return Promise.resolve(_catch(function () {
           var audio = new Audio();
-          return Promise.resolve(loader.get("" + dir + data.reference, data.type)).then(function (_ref) {
+          return Promise.resolve(_this.loadAsset(data, loader, dir)).then(function (_ref) {
             var src = _ref.src;
             if (src) {
               audio.src = src;
@@ -8103,10 +8107,11 @@ var AudioTransfomer = /*#__PURE__*/function (_AssetTransformer) {
 var CsvTransformer = /*#__PURE__*/function (_AssetTransformer) {
   _inheritsLoose(CsvTransformer, _AssetTransformer);
   function CsvTransformer(loader) {
-    return _AssetTransformer.call(this, loader, function (data, loader, dir) {
+    var _this;
+    return _this = _AssetTransformer.call(this, loader, function (data, loader, dir) {
       try {
         return Promise.resolve(_catch(function () {
-          return Promise.resolve(loader.get("" + dir + data.reference, "text")).then(function (_ref) {
+          return Promise.resolve(_this.loadAsset(data, loader, dir, "text")).then(function (_ref) {
             var text = _ref.text;
             return text.split("\n").filter(function (line) {
               return line.length;
@@ -8130,12 +8135,13 @@ var CsvTransformer = /*#__PURE__*/function (_AssetTransformer) {
 var ImageTransformer = /*#__PURE__*/function (_AssetTransformer) {
   _inheritsLoose(ImageTransformer, _AssetTransformer);
   function ImageTransformer(loader) {
-    return _AssetTransformer.call(this, loader, function (data, loader, dir) {
+    var _this;
+    return _this = _AssetTransformer.call(this, loader, function (data, loader, dir) {
       try {
         return Promise.resolve(_catch(function () {
           var image = new Image();
           ;
-          return Promise.resolve(loader.get("" + dir + data.reference, data.type)).then(function (_ref) {
+          return Promise.resolve(_this.loadAsset(data, loader, dir)).then(function (_ref) {
             var src = _ref.src;
             if (src) {
               image.src = src;
@@ -8168,7 +8174,7 @@ var ObjTransformer = /*#__PURE__*/function (_AssetTransformer) {
     return _this = _AssetTransformer.call(this, loader, function (data, loader, dir, property, params) {
       try {
         return Promise.resolve(_catch(function () {
-          return Promise.resolve(loader.get(dir + "/" + data.reference, data.type)).then(function (_ref) {
+          return Promise.resolve(_this.loadAsset(data, loader, dir)).then(function (_ref) {
             var object = _ref.object;
             var replacedObject = _this.paramsReplacement(object, data === null || data === void 0 ? void 0 : data.params);
             return Promise.resolve(assembler.assemble(replacedObject, dir, property, _extends({}, params, {
@@ -8249,10 +8255,11 @@ var ReferenceTransformer = /*#__PURE__*/function (_Transformer) {
 var TextTransfomer = /*#__PURE__*/function (_AssetTransformer) {
   _inheritsLoose(TextTransfomer, _AssetTransformer);
   function TextTransfomer(loader) {
-    return _AssetTransformer.call(this, loader, function (data, loader, dir) {
+    var _this;
+    return _this = _AssetTransformer.call(this, loader, function (data, loader, dir) {
       try {
         return Promise.resolve(_catch(function () {
-          return Promise.resolve(loader.get("" + dir + data.reference, data.type)).then(function (_ref) {
+          return Promise.resolve(_this.loadAsset(data, loader, dir)).then(function (_ref) {
             var text = _ref.text;
             return text;
           });

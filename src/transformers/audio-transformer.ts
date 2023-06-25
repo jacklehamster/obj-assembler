@@ -7,7 +7,7 @@ export default class AudioTransfomer extends AssetTransformer<HTMLAudioElement |
     super(loader, async (data, loader, dir): Promise<HTMLAudioElement | TransformError> => {
       try {
         const audio = new Audio() as HTMLAudioElement & { toJSON: () => any };
-        const { src } = await loader.get(`${dir}${data.reference}`, data.type);
+        const { src } = await this.loadAsset(data, loader, dir);
         if (src) {
           audio.src = src;
           audio.toJSON = () => ({

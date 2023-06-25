@@ -6,7 +6,7 @@ export default class ObjTransformer extends AssetTransformer<any> {
   constructor(loader: Loader, assembler: Assembler) {
     super(loader, async (data, loader, dir, property, params) => {
       try {
-        const { object } = await loader.get(`${dir}/${data.reference}`, data.type);
+        const { object } = await this.loadAsset(data, loader, dir);
         const replacedObject = this.paramsReplacement(object, data?.params);
         return await assembler.assemble(replacedObject, dir, property, {...params, referenceDepth: params.referenceDepth + 1});
       } catch (e) {

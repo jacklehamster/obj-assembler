@@ -7,7 +7,7 @@ export default class ImageTransformer extends AssetTransformer<HTMLImageElement 
     super(loader, async (data, loader, dir) => {
       try {
         const image = new Image() as HTMLImageElement & { toJSON: () => any };;
-        const { src } = await loader.get(`${dir}${data.reference}`, data.type);
+        const { src } = await this.loadAsset(data, loader, dir);
         if (src) {
           image.src = src;
           image.toJSON = () => ({

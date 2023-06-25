@@ -6,7 +6,7 @@ export default class TextTransfomer extends AssetTransformer<string | TransformE
   constructor(loader: Loader) {
     super(loader, async (data, loader, dir): Promise<string | TransformError> => {
       try {
-        const { text } = await loader.get(`${dir}${data.reference}`, data.type);
+        const { text } = await this.loadAsset(data, loader, dir);
         return text!;  
       } catch (e) {
         return {
