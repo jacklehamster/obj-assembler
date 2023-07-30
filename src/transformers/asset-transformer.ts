@@ -12,8 +12,12 @@ export default class AssetTransformer<T> extends Transformer<T> {
     this.assetFactory = factory;
   }
 
+  private cleanPath(path: string): string {
+    return path.split("//").join("/");
+  }
+
   loadAsset(data: SourceData, loader: Loader, dir: string, type?: string) {
-    return loader.get(`${dir}/${data.reference}`, type ?? data.type);    
+    return loader.get(this.cleanPath(`${dir}/${data.reference}`), type ?? data.type);    
   }
 
   async process(data: SourceData, dir: string, property: string, params: AssemlyParams): Promise<T> {

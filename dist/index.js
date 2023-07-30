@@ -8056,8 +8056,11 @@ var AssetTransformer = /*#__PURE__*/function (_Transformer) {
     return _this;
   }
   var _proto = AssetTransformer.prototype;
+  _proto.cleanPath = function cleanPath(path) {
+    return path.split("//").join("/");
+  };
   _proto.loadAsset = function loadAsset(data, loader, dir, type) {
-    return loader.get(dir + "/" + data.reference, type != null ? type : data.type);
+    return loader.get(this.cleanPath(dir + "/" + data.reference), type != null ? type : data.type);
   };
   _proto.process = function process(data, dir, property, params) {
     try {
@@ -8177,7 +8180,8 @@ var ObjTransformer = /*#__PURE__*/function (_AssetTransformer) {
           return Promise.resolve(_this.loadAsset(data, loader, dir)).then(function (_ref) {
             var object = _ref.object;
             var replacedObject = _this.paramsReplacement(object, data === null || data === void 0 ? void 0 : data.params);
-            return Promise.resolve(assembler.assemble(replacedObject, dir, property, _extends({}, params, {
+            var newDir = dir + "/" + data.reference.substring(0, data.reference.lastIndexOf("/"));
+            return Promise.resolve(assembler.assemble(replacedObject, newDir, property, _extends({}, params, {
               referenceDepth: params.referenceDepth + 1
             })));
           });

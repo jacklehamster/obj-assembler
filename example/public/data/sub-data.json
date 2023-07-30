@@ -1,3 +1,10 @@
 {
-    "reference": "secondary-data.json"
+    "ref": {
+        "reference": "secondary-data.json"
+    },
+    "array": [
+        {
+            "reference": "secondary-data.json"
+        }
+    ]
 }

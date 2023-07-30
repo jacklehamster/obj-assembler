@@ -8,7 +8,8 @@ export default class ObjTransformer extends AssetTransformer<any> {
       try {
         const { object } = await this.loadAsset(data, loader, dir);
         const replacedObject = this.paramsReplacement(object, data?.params);
-        return await assembler.assemble(replacedObject, dir, property, {...params, referenceDepth: params.referenceDepth + 1});
+        const newDir = `${dir}/${data.reference.substring(0, data.reference.lastIndexOf("/"))}`;
+        return await assembler.assemble(replacedObject, newDir, property, {...params, referenceDepth: params.referenceDepth + 1});
       } catch (e) {
         return {
           ...data,
