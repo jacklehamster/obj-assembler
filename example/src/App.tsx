@@ -17,10 +17,13 @@ const App = () => {
 
   const processData = useCallback(async () => {
     setProcessing(true);
-    setMainData(JSON.stringify(await assembler.assemble(
+    const data = await assembler.assemble(
       JSON.parse(source),
       "data/",
-    ),null, "  "));
+    );
+    console.log(">", data);
+    console.log(">>", JSON.parse(JSON.stringify(data)));
+    setMainData(JSON.stringify(data, null, "  "));
     setProcessing(false);
   }, [source]);
 

@@ -92,7 +92,99 @@ function _settle(pact, state, value) {
 	}
 }
 
+function _isSettledPact(thenable) {
+	return thenable instanceof _Pact && thenable.s & 1;
+}
+
+// Asynchronously iterate through an object that has a length property, passing the index as the first argument to the callback (even as the length property changes)
+function _forTo(array, body, check) {
+	var i = -1, pact, reject;
+	function _cycle(result) {
+		try {
+			while (++i < array.length && (!check || !check())) {
+				result = body(i);
+				if (result && result.then) {
+					if (_isSettledPact(result)) {
+						result = result.v;
+					} else {
+						result.then(_cycle, reject || (reject = _settle.bind(null, pact = new _Pact(), 2)));
+						return;
+					}
+				}
+			}
+			if (pact) {
+				_settle(pact, 1, result);
+			} else {
+				pact = result;
+			}
+		} catch (e) {
+			_settle(pact || (pact = new _Pact()), 2, e);
+		}
+	}
+	_cycle();
+	return pact;
+}
+
 const _iteratorSymbol = /*#__PURE__*/ typeof Symbol !== "undefined" ? (Symbol.iterator || (Symbol.iterator = Symbol("Symbol.iterator"))) : "@@iterator";
+
+// Asynchronously iterate through an object's values
+// Uses for...of if the runtime supports it, otherwise iterates until length on a copy
+function _forOf(target, body, check) {
+	if (typeof target[_iteratorSymbol] === "function") {
+		var iterator = target[_iteratorSymbol](), step, pact, reject;
+		function _cycle(result) {
+			try {
+				while (!(step = iterator.next()).done && (!check || !check())) {
+					result = body(step.value);
+					if (result && result.then) {
+						if (_isSettledPact(result)) {
+							result = result.v;
+						} else {
+							result.then(_cycle, reject || (reject = _settle.bind(null, pact = new _Pact(), 2)));
+							return;
+						}
+					}
+				}
+				if (pact) {
+					_settle(pact, 1, result);
+				} else {
+					pact = result;
+				}
+			} catch (e) {
+				_settle(pact || (pact = new _Pact()), 2, e);
+			}
+		}
+		_cycle();
+		if (iterator.return) {
+			var _fixup = function(value) {
+				try {
+					if (!step.done) {
+						iterator.return();
+					}
+				} catch(e) {
+				}
+				return value;
+			};
+			if (pact && pact.then) {
+				return pact.then(_fixup, function(e) {
+					throw _fixup(e);
+				});
+			}
+			_fixup();
+		}
+		return pact;
+	}
+	// No support for Symbol.iterator
+	if (!("length" in target)) {
+		throw new TypeError("Object is not iterable");
+	}
+	// Handle live collections properly
+	var values = [];
+	for (var i = 0; i < target.length; i++) {
+		values.push(target[i]);
+	}
+	return _forTo(values, function(i) { return body(values[i]); }, check);
+}
 
 const _asyncIteratorSymbol = /*#__PURE__*/ typeof Symbol !== "undefined" ? (Symbol.asyncIterator || (Symbol.asyncIterator = Symbol("Symbol.asyncIterator"))) : "@@asyncIterator";
 
@@ -8342,18 +8434,22 @@ var Assembler = /*#__PURE__*/function () {
       property = "#";
     }
     try {
-      var _temp8 = function _temp8() {
-        function _temp6() {
+      var _temp10 = function _temp10() {
+        function _temp8() {
           return params.objects[property];
         }
-        var _temp5 = function () {
+        var _temp7 = function () {
           if (init) {
-            return Promise.resolve(Promise.all(params.pendingPromises)).then(function () {
+            var _temp6 = function _temp6() {
               _this3.loader.clear();
+            };
+            var _temp5 = _forOf(params.pendingPromises, function (promise) {
+              return Promise.resolve(promise).then(function () {});
             });
+            return _temp5 && _temp5.then ? _temp5.then(_temp6) : _temp6(_temp5);
           }
         }();
-        return _temp5 && _temp5.then ? _temp5.then(_temp6) : _temp6(_temp5);
+        return _temp7 && _temp7.then ? _temp7.then(_temp8) : _temp8(_temp7);
       };
       var _this3 = this;
       var init = !params;
@@ -8400,7 +8496,7 @@ var Assembler = /*#__PURE__*/function () {
         });
       }
       params.objects[property] = obj;
-      var _temp7 = function () {
+      var _temp9 = function () {
         if (typeof obj.reference === "string") {
           var _obj$type;
           var path = obj.reference;
@@ -8416,7 +8512,7 @@ var Assembler = /*#__PURE__*/function () {
           if (_temp4 && _temp4.then) return _temp4.then(function () {});
         }
       }();
-      return Promise.resolve(_temp7 && _temp7.then ? _temp7.then(_temp8) : _temp8(_temp7));
+      return Promise.resolve(_temp9 && _temp9.then ? _temp9.then(_temp10) : _temp10(_temp9));
     } catch (e) {
       return Promise.reject(e);
     }

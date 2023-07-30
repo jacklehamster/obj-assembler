@@ -105,7 +105,9 @@ export class Assembler {
     }
 
     if (init) {
-      await Promise.all(params.pendingPromises);
+      for (let promise of params.pendingPromises) {
+        await promise;
+      }
       this.loader.clear();
     }
     return params.objects[property];

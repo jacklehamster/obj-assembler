@@ -41,7 +41,7 @@
   "circular-reference": {
     "type": "json", "reference": "circular.json"
   },
-  "texture-sample": {
+  "texture-sample": [{
     "reference": "resources/texture-sample/texture-sample.yml"
-  }
+  }]
 }
